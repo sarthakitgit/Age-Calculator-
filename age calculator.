@@ -1,0 +1,57 @@
+from tkinter import *
+from datetime import datetime
+
+def calculate_age():
+    dob_str = dob_entry.get()
+    try:
+        # Convert string to date object
+        dob = datetime.strptime(dob_str, "%d/%m/%Y")
+        today = datetime.now()
+
+        if dob > today:
+            result_label.config(text="Date is in the future!", fg="red")
+            return
+
+        # Calculate years
+        years = today.year - dob.year
+        months = today.month - dob.month
+        days = today.day - dob.day
+
+        # Adjust if days/months are negative
+        if days < 0:
+            months -= 1
+            days += (dob.replace(month=dob.month % 12 + 1, day=1) - dob.replace(day=1)).days
+        if months < 0:
+            years -= 1
+            months += 12
+
+        result_label.config(
+            text=f"Age: {years} Years, {months} Months, {days} Days",
+            fg="green"
+        )
+    except ValueError:
+        result_label.config(text="Invalid format! Use DD/MM/YYYY", fg="red")
+
+def clear_fields():
+    dob_entry.delete(0, END)
+    result_label.config(text="")
+
+# Main window
+root = Tk()
+root.title("Simple Age Calculator")
+root.geometry("400x200")
+root.resizable(False, False)
+
+Label(root, text="Enter DOB (DD/MM/YYYY):", font=("Arial", 12)).pack(pady=10)
+dob_entry = Entry(root, font=("Arial", 12), justify="center")
+dob_entry.pack()
+
+Button(root, text="Calculate", font=("Arial", 12), bg="blue", fg="white",
+       command=calculate_age).pack(pady=5)
+Button(root, text="Clear", font=("Arial", 12), bg="red", fg="white",
+       command=clear_fields).pack(pady=5)
+
+result_label = Label(root, text="", font=("Arial", 12))
+result_label.pack(pady=10)
+
+root.mainloop()
